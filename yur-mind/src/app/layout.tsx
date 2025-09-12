@@ -3,7 +3,7 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: 'YUR: Void-Full Framework',
-  description: 'A World Computer prototype simulating the Void-Full Framework (VFF).',
+  description: 'A World Computer prototype simulating the Void-Full Framework (VFF) with sterile neutrinos and 11D matrix time.',
 };
 
 export default function RootLayout({
@@ -12,8 +12,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body>{children}</body>
+    <html lang="en" suppressHydrationWarning>
+      <body suppressHydrationWarning>{children}</body>
     </html>
   );
 }
