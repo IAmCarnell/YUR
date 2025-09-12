@@ -1,11 +1,13 @@
 'use client';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Stars } from '@react-three/drei';
+import { OrbitControls, Stars, Torus } from '@react-three/drei';
 import { useState } from 'react';
 
 export default function YURMind() {
   const [T, setT] = useState(1); // T = infinity * 0 resolves to 1
-  const scale = T > 0 ? Math.log(T + 1) : 0.1; // Void-to-cosmos scaling
+  const activeScale = T > 0 ? Math.log(T + 1) : 0.1; // Active neutrino sphere
+  const sterileScale = T > 0 ? T : 0.1; // Sterile neutrino sphere (~1 eV)
+  const time3DScale = T > 0 ? Math.sqrt(T * 1.732) : 0.1; // 11D matrix time (~1.732)
 
   return (
     <main style={{ height: '100vh', background: 'black' }}>
@@ -25,13 +27,28 @@ export default function YURMind() {
         />
         {T.toFixed(1)}
       </label>
+      <div style={{ position: 'absolute', top: 90, left: 10, color: 'white', zIndex: 1, fontFamily: 'sans-serif' }}>
+        <p>Active Neutrino (~0.058 eV): Blue Sphere</p>
+        <p>Sterile Neutrino (~1 eV, DUNE): Green Sphere</p>
+        <p>3D Time (11D Matrix): Red Torus</p>
+      </div>
       <Canvas style={{ position: 'absolute', top: 0, left: 0 }}>
         <ambientLight intensity={0.5} />
         <pointLight position={[10, 10, 10]} />
-        <mesh scale={scale}>
+        {/* Active Neutrino Sphere */}
+        <mesh scale={activeScale} position={[-2, 0, 0]}>
           <sphereGeometry args={[1, 32, 32]} />
-          <meshStandardMaterial color={T > 0 ? 'blue' : 'black'} />
+          <meshStandardMaterial color="blue" />
         </mesh>
+        {/* Sterile Neutrino Sphere */}
+        <mesh scale={sterileScale} position={[2, 0, 0]}>
+          <sphereGeometry args={[1, 32, 32]} />
+          <meshStandardMaterial color="green" />
+        </mesh>
+        {/* 3D Time Torus (11D Matrix) */}
+        <Torus scale={time3DScale} position={[0, 0, -2]} args={[1, 0.3, 16, 100]}>
+          <meshStandardMaterial color="red" />
+        </Torus>
         <Stars radius={100} depth={50} count={5000} factor={4} />
         <OrbitControls />
       </Canvas>
