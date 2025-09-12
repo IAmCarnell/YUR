@@ -37,3 +37,6 @@ Computes VFF predictions: void entropy, \( \Lambda \), and entanglement phases.
    ```bash
    pip install numpy sympy matplotlib
  
+
+
+- Stable sim with sterile neutrinos (~1 eV, DUNE-inspired mixing) and 11D M-theory matrix-refined 3D time (BFSS-inspired fuzzy spheres).
