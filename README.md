@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # YUR: Void-Full Framework
 
 A "World Computer" prototype that unifies quantum gravity and cosmology through the **Void-Full Framework (VFF)**, powered by \( T = \infty \times 0 \). YUR simulates entropic gravity, quantum entanglement, and dark energy emergence in an interactive, scalable platform. It’s a bold step toward a decentralized, immersive UI (think tesseract desktop) and a "smart world" vision tied to ThingForge.
@@ -18,7 +17,7 @@ Computes VFF predictions: void entropy, \( \Lambda \), and entanglement phases.
    ```bash
    pip install numpy sympy matplotlib
  
-=======
+
 # YUR: Void-Full Framework
 
 A "World Computer" prototype that unifies quantum gravity and cosmology through the **Void-Full Framework (VFF)**, powered by \( T = \infty \times 0 \). YUR simulates entropic gravity, quantum entanglement, and dark energy emergence in an interactive, scalable platform. It’s a bold step toward a decentralized, immersive UI (think tesseract desktop) and a "smart world" vision tied to ThingForge.
@@ -38,4 +37,3 @@ Computes VFF predictions: void entropy, \( \Lambda \), and entanglement phases.
    ```bash
    pip install numpy sympy matplotlib
  
->>>>>>> 49ba19d91828f31b15823be095b7877c6c504df7
