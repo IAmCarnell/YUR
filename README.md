@@ -8,14 +8,14 @@
 ![WebXR](https://img.shields.io/badge/WebXR-FF6600?style=flat&logo=webxr&logoColor=white)
 ![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=flat&logo=mongodb&logoColor=white)
 
-A "World Computer" prototype that unifies quantum gravity and cosmology through the **Void-Full Framework (VFF)**, powered by \( T = \infty \times 0 \). YUR simulates entropic gravity, quantum entanglement, dark energy emergence, sterile neutrinos, and 11D matrix-refined 3D time in an interactive, scalable platform. It's a bold step toward a decentralized, immersive UI (think tesseract desktop) and a "smart world" vision tied to ThingForge.
+A "World Computer" prototype that unifies quantum gravity and cosmology through the **Void-Full Framework (VFF)**, powered by \( T = \infty \times 0 \). YUR simulates entropic gravity, quantum entanglement phase behavior, neutrino sector structure, and emergent intelligence layers.
 
 ## 🌌 Why YUR?
 
-- **Unifies Physics**: Models void entropy, cosmological constant \( \Lambda \), entanglement phase shifts, sterile neutrinos (~1 eV), and 11D matrix 3D time via \( T = \infty \times 0 \).
-- **Matches Data**: Predicts \( \Lambda \approx 1.63 \times 10^{-35} \, \text{s}^{-2} \) (DESI 2026), entanglement phases (~0.006 rad, MIT oscillators), and sterile neutrino mixing (DUNE 2025).
-- **Open & Extensible**: Built for community forks—add 3D time, neutrino masses, or M-theory extensions.
-- **Spatial UI**: WebXR frontend visualizes void-to-cosmos with active (~0.058 eV, blue sphere), sterile neutrinos (~1 eV, green sphere), and 11D 3D time (red torus).
+- **Unifies Physics**: Models void entropy, cosmological constant \( \Lambda \), entanglement phase shifts, neutrino mass scaling, and higher-dimensional temporal structure via \( T = \infty \times 0 \).
+- **Matches Data**: Predicts \( \Lambda \approx 1.63 \times 10^{-35} \, \text{s}^{-2} \) (DESI 2026), entanglement phases (~0.006 rad, MIT oscillators), and neutrino sector scaling (DUNE alignment).
+- **Open & Extensible**: Built for community forks—add neutrino refinements, temporal algebra extensions, or ontology evolution.
+- **Spatial UI**: Current WebXR frontend focuses on a single active neutrino anchor (blue sphere) plus enhancement overlays (quantum probability clouds, linkage suggestions, staking, isomorphic candidates). Former geometry (sterile sphere, 3D time torus) was removed for clarity and performance.
 
 ## 🏗️ Architecture
 
@@ -29,7 +29,7 @@ YUR/
 │   ├── RESTful API (Express.js)
 │   └── MongoDB integration
 ├── yur-mind/            # Next.js WebXR Frontend
-│   ├── 3D physics visualization (Three.js)
+│   ├── Core anchor visualization (active neutrino + overlays)
 │   ├── Enhancement feature panels
 │   ├── Interactive WebXR interface
 │   └── Real-time data integration
@@ -58,7 +58,7 @@ YUR/
 
 3. **Frontend: 3D Visualization + Enhancement UI (Next.js/React)**
    ```bash
-   cd yur-mind && npm install
+   cd ../yur-mind && npm install
    npm run dev
    ```
    Frontend runs on http://localhost:3000
@@ -85,8 +85,8 @@ YUR/
 - **Void Entropy**: Quantum information metrics via \( T = \infty \times 0 \) convergence
 - **Λ Prediction**: Cosmological constant \( \Lambda \approx 1.63 \times 10^{-35} \, \text{s}^{-2} \) (DESI-compatible)
 - **Entanglement Phase Shifts**: ~0.006 rad phase calculations (MIT oscillator validation)
-- **Active/Sterile Neutrino Modeling**: Active (~0.058 eV) and sterile (~1 eV) mass calculations
-- **11D Matrix 3D Time Representation**: Higher-dimensional time refinement via matrix algebra
+- **Neutrino Sector Scaling**: Active mass base (~0.058 eV) with T-scaling extensions
+- **Temporal Algebra (Optional)**: Higher-dimensional time constructs (no longer directly visualized in UI)
 
 ### Enhancement Layer (Issues #2–#5)
 
@@ -127,7 +127,6 @@ YUR/
 ## 🎮 Usage
 
 ### Enhancement Panel Workflow
-
 1. **Select Nodes**: Click quantum clouds or skill graph nodes to select for analysis
 2. **Review Suggestions**: Open "🔗 Suggestions" panel to view semantic linkage recommendations
 3. **Stake Claims**: Use "💰 Staking" panel to stake on node relevance with reputation weighting
@@ -135,7 +134,6 @@ YUR/
 5. **Visualize Probability Clouds**: Toggle "⚛️ Quantum Mode" for uncertainty rendering with particle effects
 
 ### Enhancement Panel Details
-
 - **Suggestions Panel**: Auto-suggested concept linkages using semantic embeddings with accept/reject workflow
 - **Isomorphic Panel**: Detect similar subtree structures across agent skill trees with confidence scoring
 - **Staking Panel**: Stake on node relevance claims with consensus mechanisms and risk assessment
@@ -200,7 +198,7 @@ MIT License - see LICENSE file for details.
 ## ⚠️ Disclaimer
 
 ### Scientific Model Status
-The Void-Full Framework (VFF) represents an **exploratory and speculative** scientific model that has not undergone peer review. While YUR makes specific predictions about cosmological parameters (Λ, neutrino masses, entanglement phases), these should be considered theoretical explorations rather than established physics. The framework aims to inspire discussion and provide a computational testbed for novel quantum gravity approaches.
+The Void-Full Framework (VFF) represents an **exploratory and speculative** scientific model that has not undergone peer review. While YUR makes specific predictions about cosmological parameters and quantum behavior, these remain provisional until validated by independent study.
 
 ### AI Feature Ethical Considerations
 YUR's AI enhancement features (embedding integration, ontology merging, knowledge staking) are designed with the following ethical principles:
