@@ -116,6 +116,101 @@ export interface SuggestionLog {
   timestamp: Date;
 }
 
+// ===== NEW INTERFACES FOR ENHANCEMENT ISSUES #2-#5 =====
+
+/**
+ * Issue #2: Embedding integration
+ * Represents an embedding record for semantic similarity
+ */
+export interface EmbeddingRecord {
+  id: string;
+  nodeId: string; // Reference to agent, skill, or other entity
+  nodeType: 'agent' | 'skill' | 'quest' | 'other';
+  embedding: number[]; // Vector representation
+  metadata: {
+    label: string;
+    description?: string;
+    generatedBy: 'openai' | 'local' | 'mock';
+    modelVersion?: string;
+  };
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+/**
+ * Issue #3: Ontology merging and isomorphic subtree detection
+ * Represents a subtree hash record for detecting isomorphic structures
+ */
+export interface SubtreeHashRecord {
+  id: string;
+  nodeId: string;
+  hash: string; // Canonical hash of the subtree
+  depth: number; // How deep the subtree goes
+  childrenCount: number;
+  metadata: {
+    nodeLabel: string;
+    childrenLabels: string[];
+    generatedAt: Date;
+  };
+}
+
+/**
+ * Represents a group of isomorphic nodes
+ */
+export interface IsomorphicGroup {
+  id: string;
+  hash: string;
+  nodeIds: string[]; // All nodes with the same subtree structure
+  depth: number;
+  confidence: number; // 0-1 confidence score
+  detectedAt: Date;
+  reviewed?: boolean; // Whether a human has reviewed this group
+}
+
+/**
+ * Issue #4: Quantum-inspired UI mode
+ * Represents uncertainty/entropy data for quantum visualization
+ */
+export interface QuantumState {
+  nodeId: string;
+  uncertainty: number; // 0-1, higher = more uncertain/probability cloud
+  collapsedState?: any; // Resolved state after collapse interaction
+  lastCollapsed?: Date;
+  probabilityDistribution?: {[key: string]: number}; // For multi-state uncertainty
+}
+
+/**
+ * Issue #5: Knowledge staking and slashing
+ * Represents a stake placed on a relevance claim
+ */
+export interface Stake {
+  id: string;
+  userId: string;
+  sourceNodeId: string;
+  targetNodeId?: string; // Optional for node-specific stakes
+  linkId?: string; // Optional for link-specific stakes
+  amount: number; // Stake amount in points
+  claimType: 'relevance' | 'link_strength' | 'accuracy' | 'quality';
+  status: 'active' | 'slashed' | 'resolved' | 'withdrawn';
+  createdAt: Date;
+  resolvedAt?: Date;
+  slashReason?: string;
+  evidence?: string; // Supporting evidence for the claim
+}
+
+/**
+ * User reputation and staking history
+ */
+export interface UserReputation {
+  userId: string;
+  totalStaked: number;
+  totalSlashed: number;
+  successfulStakes: number;
+  reputation: number; // Derived score
+  stakes: Stake[];
+  lastActivity: Date;
+}
+
 /**
  * The Digital Twin that aggregates skills from all agents
  */
@@ -894,6 +989,29 @@ export interface IEvolutionStorage {
   loadAllAgents(): Promise<Agent[]>;
   loadAllSkills(): Promise<Skill[]>;
   loadAllQuests(): Promise<Quest[]>;
+  
+  // Issue #2: Embedding storage
+  saveEmbedding(embedding: EmbeddingRecord): Promise<void>;
+  loadEmbedding(nodeId: string, nodeType: string): Promise<EmbeddingRecord | null>;
+  loadAllEmbeddings(): Promise<EmbeddingRecord[]>;
+  
+  // Issue #3: Subtree hash storage
+  saveSubtreeHash(record: SubtreeHashRecord): Promise<void>;
+  loadSubtreeHash(nodeId: string): Promise<SubtreeHashRecord | null>;
+  loadIsomorphicGroups(): Promise<IsomorphicGroup[]>;
+  saveIsomorphicGroup(group: IsomorphicGroup): Promise<void>;
+  
+  // Issue #4: Quantum state storage
+  saveQuantumState(state: QuantumState): Promise<void>;
+  loadQuantumState(nodeId: string): Promise<QuantumState | null>;
+  
+  // Issue #5: Staking storage
+  saveStake(stake: Stake): Promise<void>;
+  loadStake(stakeId: string): Promise<Stake | null>;
+  loadStakesByNode(nodeId: string): Promise<Stake[]>;
+  loadStakesByUser(userId: string): Promise<Stake[]>;
+  saveUserReputation(reputation: UserReputation): Promise<void>;
+  loadUserReputation(userId: string): Promise<UserReputation | null>;
 }
 
 // ===== MONGODB STORAGE IMPLEMENTATION =====
@@ -977,6 +1095,94 @@ export class MongoEvolutionStorage implements IEvolutionStorage {
     console.log(`Loading all quests from MongoDB`);
     return [];
     // return await db.collection('quests').find({}).toArray();
+  }
+
+  // Issue #2: Embedding storage methods
+  async saveEmbedding(embedding: EmbeddingRecord): Promise<void> {
+    console.log(`Saving embedding for ${embedding.nodeId} to MongoDB`);
+    // await db.collection('embeddings').replaceOne({ nodeId: embedding.nodeId, nodeType: embedding.nodeType }, { ...embedding, _id: embedding.id }, { upsert: true });
+  }
+
+  async loadEmbedding(nodeId: string, nodeType: string): Promise<EmbeddingRecord | null> {
+    console.log(`Loading embedding for ${nodeId} (${nodeType}) from MongoDB`);
+    return null;
+    // return await db.collection('embeddings').findOne({ nodeId, nodeType });
+  }
+
+  async loadAllEmbeddings(): Promise<EmbeddingRecord[]> {
+    console.log(`Loading all embeddings from MongoDB`);
+    return [];
+    // return await db.collection('embeddings').find({}).toArray();
+  }
+
+  // Issue #3: Subtree hash storage methods
+  async saveSubtreeHash(record: SubtreeHashRecord): Promise<void> {
+    console.log(`Saving subtree hash for ${record.nodeId} to MongoDB`);
+    // await db.collection('subtree_hashes').replaceOne({ nodeId: record.nodeId }, { ...record, _id: record.id }, { upsert: true });
+  }
+
+  async loadSubtreeHash(nodeId: string): Promise<SubtreeHashRecord | null> {
+    console.log(`Loading subtree hash for ${nodeId} from MongoDB`);
+    return null;
+    // return await db.collection('subtree_hashes').findOne({ nodeId });
+  }
+
+  async loadIsomorphicGroups(): Promise<IsomorphicGroup[]> {
+    console.log(`Loading isomorphic groups from MongoDB`);
+    return [];
+    // return await db.collection('isomorphic_groups').find({}).toArray();
+  }
+
+  async saveIsomorphicGroup(group: IsomorphicGroup): Promise<void> {
+    console.log(`Saving isomorphic group ${group.id} to MongoDB`);
+    // await db.collection('isomorphic_groups').replaceOne({ _id: group.id }, { ...group, _id: group.id }, { upsert: true });
+  }
+
+  // Issue #4: Quantum state storage methods
+  async saveQuantumState(state: QuantumState): Promise<void> {
+    console.log(`Saving quantum state for ${state.nodeId} to MongoDB`);
+    // await db.collection('quantum_states').replaceOne({ nodeId: state.nodeId }, state, { upsert: true });
+  }
+
+  async loadQuantumState(nodeId: string): Promise<QuantumState | null> {
+    console.log(`Loading quantum state for ${nodeId} from MongoDB`);
+    return null;
+    // return await db.collection('quantum_states').findOne({ nodeId });
+  }
+
+  // Issue #5: Staking storage methods
+  async saveStake(stake: Stake): Promise<void> {
+    console.log(`Saving stake ${stake.id} to MongoDB`);
+    // await db.collection('stakes').replaceOne({ _id: stake.id }, { ...stake, _id: stake.id }, { upsert: true });
+  }
+
+  async loadStake(stakeId: string): Promise<Stake | null> {
+    console.log(`Loading stake ${stakeId} from MongoDB`);
+    return null;
+    // return await db.collection('stakes').findOne({ _id: stakeId });
+  }
+
+  async loadStakesByNode(nodeId: string): Promise<Stake[]> {
+    console.log(`Loading stakes for node ${nodeId} from MongoDB`);
+    return [];
+    // return await db.collection('stakes').find({ $or: [{ sourceNodeId: nodeId }, { targetNodeId: nodeId }] }).toArray();
+  }
+
+  async loadStakesByUser(userId: string): Promise<Stake[]> {
+    console.log(`Loading stakes for user ${userId} from MongoDB`);
+    return [];
+    // return await db.collection('stakes').find({ userId }).toArray();
+  }
+
+  async saveUserReputation(reputation: UserReputation): Promise<void> {
+    console.log(`Saving reputation for user ${reputation.userId} to MongoDB`);
+    // await db.collection('user_reputations').replaceOne({ userId: reputation.userId }, reputation, { upsert: true });
+  }
+
+  async loadUserReputation(userId: string): Promise<UserReputation | null> {
+    console.log(`Loading reputation for user ${userId} from MongoDB`);
+    return null;
+    // return await db.collection('user_reputations').findOne({ userId });
   }
 }
 

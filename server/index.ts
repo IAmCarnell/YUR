@@ -9,6 +9,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import { config } from 'dotenv';
 import { AgentEvolutionEngine, MongoEvolutionStorage, demonstrateEvolution } from './agents/evolution';
+import { createEnhancementServices, EnhancementServices } from './services';
 
 // Load environment variables
 config();
@@ -22,9 +23,10 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
-// Initialize Evolution Engine
+// Initialize Evolution Engine and Enhancement Services
 const storage = new MongoEvolutionStorage(MONGODB_URI);
 const evolutionEngine = new AgentEvolutionEngine(storage);
+const enhancementServices = createEnhancementServices(storage);
 
 // ===== API ROUTES =====
 
@@ -193,6 +195,243 @@ app.post('/api/demo/evolution', async (req, res) => {
   } catch (error) {
     console.error('Error running evolution demo:', error);
     res.status(500).json({ error: 'Failed to run evolution demo' });
+  }
+});
+
+// ===== ENHANCEMENT FEATURES API ROUTES (Issues #2-#5) =====
+
+// Issue #2: Embedding integration and suggestions
+app.get('/api/suggestions/:nodeId', async (req, res) => {
+  try {
+    const { nodeId } = req.params;
+    const { nodeType = 'agent', topN = 5 } = req.query;
+    
+    if (!['agent', 'skill', 'quest', 'other'].includes(nodeType as string)) {
+      return res.status(400).json({ error: 'Invalid nodeType. Must be agent, skill, quest, or other' });
+    }
+    
+    const suggestions = await enhancementServices.generateSuggestions(
+      nodeId,
+      nodeType as 'agent' | 'skill' | 'quest' | 'other',
+      parseInt(topN as string)
+    );
+    
+    res.json(suggestions);
+  } catch (error) {
+    console.error('Error generating suggestions:', error);
+    res.status(500).json({ error: 'Failed to generate suggestions' });
+  }
+});
+
+// Batch compute embeddings
+app.post('/api/embeddings/batch-compute', async (req, res) => {
+  try {
+    const result = await enhancementServices.batchComputeEmbeddings();
+    res.json(result);
+  } catch (error) {
+    console.error('Error computing embeddings:', error);
+    res.status(500).json({ error: 'Failed to compute embeddings' });
+  }
+});
+
+// Issue #3: Ontology merging and isomorphic detection
+app.get('/api/ontology/isomorphic-candidates', async (req, res) => {
+  try {
+    const candidates = await enhancementServices.detectIsomorphicCandidates();
+    res.json(candidates);
+  } catch (error) {
+    console.error('Error detecting isomorphic candidates:', error);
+    res.status(500).json({ error: 'Failed to detect isomorphic candidates' });
+  }
+});
+
+// Issue #4: Quantum states
+app.post('/api/quantum/update-states', async (req, res) => {
+  try {
+    const agents = await storage.loadAllAgents();
+    const result = await enhancementServices.updateQuantumStates(agents);
+    res.json(result);
+  } catch (error) {
+    console.error('Error updating quantum states:', error);
+    res.status(500).json({ error: 'Failed to update quantum states' });
+  }
+});
+
+app.get('/api/quantum/states/:nodeId', async (req, res) => {
+  try {
+    const { nodeId } = req.params;
+    const state = await storage.loadQuantumState(nodeId);
+    
+    if (!state) {
+      return res.status(404).json({ error: 'Quantum state not found' });
+    }
+    
+    // Include visualization parameters
+    const visualParams = enhancementServices.quantum.calculateVisualizationParams(state.uncertainty);
+    
+    res.json({
+      ...state,
+      visualizationParams: visualParams
+    });
+  } catch (error) {
+    console.error('Error fetching quantum state:', error);
+    res.status(500).json({ error: 'Failed to fetch quantum state' });
+  }
+});
+
+app.post('/api/quantum/collapse/:nodeId', async (req, res) => {
+  try {
+    const { nodeId } = req.params;
+    const { resolvedState, animationDuration = 1000 } = req.body;
+    
+    const collapsedState = enhancementServices.quantum.collapseQuantumState(
+      nodeId,
+      resolvedState,
+      animationDuration
+    );
+    
+    if (!collapsedState) {
+      return res.status(404).json({ error: 'Quantum state not found' });
+    }
+    
+    // Save updated state
+    await storage.saveQuantumState(collapsedState);
+    
+    res.json(collapsedState);
+  } catch (error) {
+    console.error('Error collapsing quantum state:', error);
+    res.status(500).json({ error: 'Failed to collapse quantum state' });
+  }
+});
+
+// Issue #5: Knowledge staking
+app.post('/api/stake', async (req, res) => {
+  try {
+    const { userId, sourceNodeId, targetNodeId, linkId, amount, claimType, evidence } = req.body;
+    
+    if (!userId || !sourceNodeId || !amount || !claimType) {
+      return res.status(400).json({ 
+        error: 'userId, sourceNodeId, amount, and claimType are required' 
+      });
+    }
+    
+    if (!['relevance', 'link_strength', 'accuracy', 'quality'].includes(claimType)) {
+      return res.status(400).json({ 
+        error: 'Invalid claimType. Must be relevance, link_strength, accuracy, or quality' 
+      });
+    }
+    
+    const stake = await enhancementServices.createStake(
+      userId,
+      sourceNodeId,
+      targetNodeId,
+      linkId,
+      amount,
+      claimType,
+      evidence
+    );
+    
+    if (!stake) {
+      return res.status(400).json({ error: 'Failed to create stake' });
+    }
+    
+    res.status(201).json(stake);
+  } catch (error) {
+    console.error('Error creating stake:', error);
+    res.status(500).json({ error: 'Failed to create stake' });
+  }
+});
+
+app.post('/api/slash', async (req, res) => {
+  try {
+    const { stakeId, reason, slasherUserId } = req.body;
+    
+    if (!stakeId || !reason) {
+      return res.status(400).json({ error: 'stakeId and reason are required' });
+    }
+    
+    const success = await enhancementServices.staking.slashStake(stakeId, reason, slasherUserId);
+    
+    if (!success) {
+      return res.status(400).json({ error: 'Failed to slash stake' });
+    }
+    
+    res.json({ success: true, message: 'Stake slashed successfully' });
+  } catch (error) {
+    console.error('Error slashing stake:', error);
+    res.status(500).json({ error: 'Failed to slash stake' });
+  }
+});
+
+app.get('/api/stakes/:nodeId', async (req, res) => {
+  try {
+    const { nodeId } = req.params;
+    const stakes = await storage.loadStakesByNode(nodeId);
+    
+    // Calculate consensus if stakes exist
+    const consensus = stakes.length > 0 ? 
+      enhancementServices.staking.calculateConsensus(stakes) : null;
+    
+    res.json({
+      nodeId,
+      stakes,
+      consensus,
+      retrievedAt: new Date()
+    });
+  } catch (error) {
+    console.error('Error fetching stakes:', error);
+    res.status(500).json({ error: 'Failed to fetch stakes' });
+  }
+});
+
+app.get('/api/users/:userId/reputation', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const reputation = await enhancementServices.staking.getUserReputation(userId);
+    res.json(reputation);
+  } catch (error) {
+    console.error('Error fetching user reputation:', error);
+    res.status(500).json({ error: 'Failed to fetch user reputation' });
+  }
+});
+
+app.get('/api/stakes/recommendations/:userId/:nodeId', async (req, res) => {
+  try {
+    const { userId, nodeId } = req.params;
+    const { claimType = 'relevance' } = req.query;
+    
+    const recommendations = await enhancementServices.staking.getStakeRecommendations(
+      userId,
+      nodeId,
+      claimType as 'relevance' | 'link_strength' | 'accuracy' | 'quality'
+    );
+    
+    res.json(recommendations);
+  } catch (error) {
+    console.error('Error generating stake recommendations:', error);
+    res.status(500).json({ error: 'Failed to generate stake recommendations' });
+  }
+});
+
+// Debug/monitoring endpoints
+app.get('/api/node-status/:nodeId', async (req, res) => {
+  try {
+    const { nodeId } = req.params;
+    const status = await enhancementServices.getNodeStatus(nodeId);
+    res.json(status);
+  } catch (error) {
+    console.error('Error fetching node status:', error);
+    res.status(500).json({ error: 'Failed to fetch node status' });
+  }
+});
+
+app.get('/api/stats/staking', async (req, res) => {
+  try {
+    const stats = enhancementServices.staking.getStakingStats();
+    res.json(stats);
+  } catch (error) {
+    console.error('Error fetching staking stats:', error);
+    res.status(500).json({ error: 'Failed to fetch staking stats' });
   }
 });
 

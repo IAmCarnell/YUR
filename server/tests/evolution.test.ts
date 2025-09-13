@@ -10,6 +10,12 @@ class MockEvolutionStorage implements IEvolutionStorage {
   private skills: Map<string, Skill> = new Map();
   private quests: any[] = [];
   private digitalTwin: any = null;
+  private embeddings: Map<string, any> = new Map();
+  private subtreeHashes: Map<string, any> = new Map();
+  private isomorphicGroups: any[] = [];
+  private quantumStates: Map<string, any> = new Map();
+  private stakes: Map<string, any> = new Map();
+  private userReputations: Map<string, any> = new Map();
 
   async saveAgent(agent: Agent): Promise<void> {
     this.agents.set(agent.id, JSON.parse(JSON.stringify(agent)));
@@ -46,6 +52,72 @@ class MockEvolutionStorage implements IEvolutionStorage {
 
   async loadAllQuests(): Promise<any[]> {
     return [...this.quests];
+  }
+
+  // Issue #2: Embedding storage methods
+  async saveEmbedding(embedding: any): Promise<void> {
+    this.embeddings.set(`${embedding.nodeId}:${embedding.nodeType}`, embedding);
+  }
+
+  async loadEmbedding(nodeId: string, nodeType: string): Promise<any | null> {
+    return this.embeddings.get(`${nodeId}:${nodeType}`) || null;
+  }
+
+  async loadAllEmbeddings(): Promise<any[]> {
+    return Array.from(this.embeddings.values());
+  }
+
+  // Issue #3: Subtree hash storage methods
+  async saveSubtreeHash(record: any): Promise<void> {
+    this.subtreeHashes.set(record.nodeId, record);
+  }
+
+  async loadSubtreeHash(nodeId: string): Promise<any | null> {
+    return this.subtreeHashes.get(nodeId) || null;
+  }
+
+  async loadIsomorphicGroups(): Promise<any[]> {
+    return [...this.isomorphicGroups];
+  }
+
+  async saveIsomorphicGroup(group: any): Promise<void> {
+    this.isomorphicGroups.push(group);
+  }
+
+  // Issue #4: Quantum state storage methods
+  async saveQuantumState(state: any): Promise<void> {
+    this.quantumStates.set(state.nodeId, state);
+  }
+
+  async loadQuantumState(nodeId: string): Promise<any | null> {
+    return this.quantumStates.get(nodeId) || null;
+  }
+
+  // Issue #5: Staking storage methods
+  async saveStake(stake: any): Promise<void> {
+    this.stakes.set(stake.id, stake);
+  }
+
+  async loadStake(stakeId: string): Promise<any | null> {
+    return this.stakes.get(stakeId) || null;
+  }
+
+  async loadStakesByNode(nodeId: string): Promise<any[]> {
+    return Array.from(this.stakes.values()).filter(
+      stake => stake.sourceNodeId === nodeId || stake.targetNodeId === nodeId
+    );
+  }
+
+  async loadStakesByUser(userId: string): Promise<any[]> {
+    return Array.from(this.stakes.values()).filter(stake => stake.userId === userId);
+  }
+
+  async saveUserReputation(reputation: any): Promise<void> {
+    this.userReputations.set(reputation.userId, reputation);
+  }
+
+  async loadUserReputation(userId: string): Promise<any | null> {
+    return this.userReputations.get(userId) || null;
   }
 }
 
