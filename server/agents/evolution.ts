@@ -28,6 +28,9 @@ export interface Skill {
   learnedFrom: string[]; // Sources of learning (quest, collaboration, feedback, etc.)
   lastUsed: Date;
   timesMastered: number; // How many times this skill has been mastered (for mutation)
+  embedding?: number[]; // Embedding vector for semantic similarity
+  suggestedLinks?: SuggestedLink[]; // Suggested conceptual linkages
+  suggestionLog?: SuggestionLog[]; // Log of accepted/rejected suggestions
 }
 
 /**
@@ -87,6 +90,30 @@ export interface Agent {
   lastActive: Date;
   mutationCount: number; // How many times agent has evolved/mutated
   collaborationHistory: string[]; // Other agent IDs collaborated with
+  embedding?: number[]; // Embedding vector for agent/node
+  suggestedLinks?: SuggestedLink[]; // Suggested conceptual linkages
+  suggestionLog?: SuggestionLog[]; // Log of accepted/rejected suggestions
+}
+
+/**
+ * Represents a suggested conceptual linkage between nodes/skills
+ */
+export interface SuggestedLink {
+  sourceId: string;
+  targetId: string;
+  similarity: number;
+  accepted?: boolean;
+  timestamp: Date;
+}
+
+/**
+ * Log entry for user feedback on suggested links
+ */
+export interface SuggestionLog {
+  link: SuggestedLink;
+  action: 'accepted' | 'rejected' | 'modified';
+  userId?: string;
+  timestamp: Date;
 }
 
 /**
