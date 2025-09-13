@@ -1,6 +1,6 @@
 'use client';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Stars, Torus } from '@react-three/drei';
+import { OrbitControls, Stars } from '@react-three/drei';
 import { useState } from 'react';
 import { QuantumModeToggle, QuantumVisualization } from '../components/QuantumMode';
 import { SuggestedLinkages, SuggestionsToggle } from '../components/SuggestedLinkages';
@@ -8,10 +8,8 @@ import { StakingPanel, StakingToggle } from '../components/StakingPanel';
 import { IsomorphicCandidates, IsomorphicToggle } from '../components/IsomorphicCandidates';
 
 export default function YURMind() {
-  const [T, setT] = useState(1); // T = infinity * 0 resolves to 1
-  const activeScale = T > 0 ? Math.log(T + 1) : 0.1; // Active neutrino sphere
-  const sterileScale = T > 0 ? T : 0.1; // Sterile neutrino sphere (~1 eV)
-  const time3DScale = T > 0 ? Math.sqrt(T * 1.732) : 0.1; // 11D matrix time (~1.732)
+  const [T, setT] = useState(1); // Core parameter
+  const activeScale = T > 0 ? Math.log(T + 1) : 0.1; // Active neutrino sphere only
 
   // Enhancement features state
   const [isQuantumMode, setIsQuantumMode] = useState(false);
@@ -49,8 +47,6 @@ export default function YURMind() {
         ? { ...node, collapsed: true, uncertainty: node.uncertainty * 0.1 }
         : node
     ));
-    
-    // Auto-select the collapsed node
     setSelectedNodeId(nodeId);
   };
 
@@ -64,7 +60,7 @@ export default function YURMind() {
         YUR: Void-Full Framework
       </h1>
       
-      {/* Original physics controls */}
+      {/* Core parameter control */}
       <label style={{ position: 'absolute', top: 50, left: 10, color: 'white', zIndex: 1 }}>
         T (Void Resolution):
         <input
@@ -72,7 +68,7 @@ export default function YURMind() {
           min="0"
           max="2"
           step="0.1"
-          value={T}
+            value={T}
           onChange={(e) => setT(Number(e.target.value))}
           style={{ marginLeft: 10 }}
         />
@@ -80,9 +76,8 @@ export default function YURMind() {
       </label>
       
       <div style={{ position: 'absolute', top: 90, left: 10, color: 'white', zIndex: 1, fontFamily: 'sans-serif' }}>
-        <p>Active Neutrino (~0.058 eV): Blue Sphere</p>
-        <p>Sterile Neutrino (~1 eV, DUNE): Green Sphere</p>
-        <p>3D Time (11D Matrix): Red Torus</p>
+        <p>Active Neutrino (Core Anchor): Blue Sphere</p>
+        <p style={{ opacity: 0.6 }}>Legacy geometry removed (sterile green sphere, red torus, purple/orange/cyan spheres).</p>
       </div>
 
       {/* Enhancement Feature Toggles */}
@@ -150,24 +145,12 @@ export default function YURMind() {
         <ambientLight intensity={0.5} />
         <pointLight position={[10, 10, 10]} />
         
-        {/* Original physics visualization */}
-        {/* Active Neutrino Sphere */}
-        <mesh scale={activeScale} position={[-2, 0, 0]}>
+        {/* Retained active neutrino sphere only */}
+        <mesh scale={activeScale} position={[0, 0, 0]}>
           <sphereGeometry args={[1, 32, 32]} />
           <meshStandardMaterial color="blue" />
         </mesh>
         
-        {/* Sterile Neutrino Sphere */}
-        <mesh scale={sterileScale} position={[2, 0, 0]}>
-          <sphereGeometry args={[1, 32, 32]} />
-          <meshStandardMaterial color="green" />
-        </mesh>
-        
-        {/* 3D Time Torus (11D Matrix) */}
-        <Torus scale={time3DScale} position={[0, 0, -2]} args={[1, 0.3, 16, 100]}>
-          <meshStandardMaterial color="red" />
-        </Torus>
-
         {/* Quantum visualization overlay */}
         <QuantumVisualization
           isQuantumMode={isQuantumMode}
