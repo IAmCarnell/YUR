@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://backend:8000
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - yur-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=true
+      - CORS_ORIGINS=http://localhost:5173
+    volumes:
+      - ./backend:/app
+      - ./data:/app/data
+      - ./logs:/app/logs
+    networks:
+      - yur-network
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - yur-network
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./frontend/dist:/usr/share/nginx/html
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - yur-network
+
+networks:
+  yur-network:
+    driver: bridge
+
+volumes:
+  node_modules:
+  python_packages:
