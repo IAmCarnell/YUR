@@ -8,8 +8,6 @@ import {
   CardActions,
   Button,
   Chip,
-  LinearProgress,
-  Alert,
   Avatar,
   Stack,
   Divider,
@@ -123,65 +121,92 @@ export const Dashboard: React.FC = () => {
     navigate('/login')
     return null
   }
-      icon: <Timeline sx={{ fontSize: 40 }} />,
-      action: () => navigate('/documentation'),
-      color: '#ff9800',
-    },
-  ]
 
   return (
     <Box>
-      <Typography variant="h2" gutterBottom>
-        YUR Framework Dashboard
-      </Typography>
-      <Typography variant="h6" color="text.secondary" gutterBottom>
-        Infinite-Dimensional Thing Framework - Interactive Exploration Platform
-      </Typography>
-
-      {/* System Status */}
+      {/* Header */}
       <Box sx={{ mb: 4 }}>
-        {loading ? (
-          <LinearProgress />
-        ) : (
-          <Alert
-            severity={isHealthy ? 'success' : 'error'}
-            sx={{ mb: 2 }}
-            action={
-              <Button color="inherit" size="small" onClick={checkHealth}>
-                Refresh
-              </Button>
-            }
-          >
-            {isHealthy ? 'System Operational' : 'System Offline'} 
-            {healthData && (
-              <>
-                {' | TensorFlow: '}{healthData.tensorflow}
-                {' | NumPy: '}{healthData.numpy}
-              </>
-            )}
-          </Alert>
-        )}
+        <Grid container spacing={3} alignItems="center">
+          <Grid item>
+            <Avatar
+              src={user.avatar}
+              sx={{ width: 80, height: 80, bgcolor: 'primary.main' }}
+            >
+              {user.name?.charAt(0) || 'P'}
+            </Avatar>
+          </Grid>
+          <Grid item xs>
+            <Typography variant="h4" gutterBottom>
+              Welcome back, {user.name || 'User'}!
+            </Typography>
+            <Typography variant="h6" color="text.secondary">
+              Stay connected with your Pitnik community
+            </Typography>
+          </Grid>
+          <Grid item>
+            <Stack direction="row" spacing={1}>
+              <IconButton color="primary">
+                <Badge badgeContent={4} color="error">
+                  <Notifications />
+                </Badge>
+              </IconButton>
+              <IconButton color="primary">
+                <Badge badgeContent={2} color="error">
+                  <Message />
+                </Badge>
+              </IconButton>
+            </Stack>
+          </Grid>
+        </Grid>
       </Box>
 
-      {/* Feature Cards */}
+      {/* Quick Stats */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
-        {features.map((feature, index) => (
-          <Grid item xs={12} sm={6} md={3} key={index}>
+        {quickStats.map((stat, index) => (
+          <Grid item xs={6} sm={3} key={index}>
+            <Card>
+              <CardContent sx={{ textAlign: 'center', py: 2 }}>
+                <Box sx={{ color: 'primary.main', mb: 1 }}>
+                  {stat.icon}
+                </Box>
+                <Typography variant="h4" color="primary">
+                  {stat.value}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {stat.label}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+
+      {/* Main Features */}
+      <Typography variant="h5" gutterBottom>
+        Explore Pitnik
+      </Typography>
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        {socialFeatures.map((feature, index) => (
+          <Grid item xs={12} sm={6} md={4} key={index}>
             <Card
               sx={{
                 height: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                transition: 'transform 0.2s',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
                 '&:hover': {
                   transform: 'translateY(-4px)',
-                  boxShadow: 4,
+                  boxShadow: (theme) => theme.shadows[8],
                 },
               }}
             >
-              <CardContent sx={{ flexGrow: 1, textAlign: 'center' }}>
-                <Box sx={{ color: feature.color, mb: 2 }}>
-                  {feature.icon}
+              <CardContent>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                  <Box sx={{ color: feature.color, mr: 2 }}>
+                    {feature.icon}
+                  </Box>
+                  {feature.badge && (
+                    <Badge badgeContent={feature.badge} color="error" sx={{ ml: 'auto' }} />
+                  )}
                 </Box>
                 <Typography variant="h6" gutterBottom>
                   {feature.title}
@@ -190,11 +215,11 @@ export const Dashboard: React.FC = () => {
                   {feature.description}
                 </Typography>
               </CardContent>
-              <CardActions sx={{ justifyContent: 'center', pb: 2 }}>
+              <CardActions>
                 <Button
                   variant="outlined"
                   onClick={feature.action}
-                  disabled={!isHealthy}
+                  fullWidth
                 >
                   Explore
                 </Button>
@@ -204,52 +229,66 @@ export const Dashboard: React.FC = () => {
         ))}
       </Grid>
 
-      {/* Quick Stats */}
+      {/* Recent Activity */}
       <Grid container spacing={3}>
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12} md={8}>
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>
-                Framework Capabilities
+                Recent Activity
               </Typography>
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                <Chip label="Infinite Dimensions" color="primary" size="small" />
-                <Chip label="Real-time Simulation" color="secondary" size="small" />
-                <Chip label="Quantum Computing" color="primary" variant="outlined" size="small" />
-                <Chip label="AI Integration" color="secondary" variant="outlined" size="small" />
-                <Chip label="BCI Ready" color="primary" size="small" />
-                <Chip label="Nanotech Stubs" color="secondary" size="small" />
-              </Box>
+              <Stack spacing={2}>
+                {recentActivity.map((activity, index) => (
+                  <Box key={index}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                      <Avatar src={activity.avatar} sx={{ width: 32, height: 32 }} />
+                      <Box sx={{ flex: 1 }}>
+                        <Typography variant="body2">{activity.text}</Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {activity.time}
+                        </Typography>
+                      </Box>
+                    </Box>
+                    {index < recentActivity.length - 1 && <Divider sx={{ mt: 2 }} />}
+                  </Box>
+                ))}
+              </Stack>
             </CardContent>
           </Card>
         </Grid>
+        
         <Grid item xs={12} md={4}>
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>
-                Simulation Types
+                Trending Topics
               </Typography>
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                <Chip label="DESI" color="info" size="small" />
-                <Chip label="Bell Tests" color="success" size="small" />
-                <Chip label="AI Networks" color="warning" size="small" />
-                <Chip label="Tree Structures" color="error" size="small" />
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Compute Modes
-              </Typography>
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                <Chip label="Desktop Mode" color="primary" size="small" />
-                <Chip label="Supercomputing" color="secondary" size="small" />
-                <Chip label="GPU Accelerated" color="primary" variant="outlined" size="small" />
-                <Chip label="Distributed" color="secondary" variant="outlined" size="small" />
-              </Box>
+              <Stack spacing={1}>
+                <Chip 
+                  label="#Technology" 
+                  color="primary" 
+                  size="small" 
+                  icon={<TrendingUp />}
+                />
+                <Chip 
+                  label="#PitJob" 
+                  color="secondary" 
+                  size="small" 
+                  icon={<TrendingUp />}
+                />
+                <Chip 
+                  label="#PitTube" 
+                  color="primary" 
+                  variant="outlined" 
+                  size="small" 
+                />
+                <Chip 
+                  label="#Marketplace" 
+                  color="secondary" 
+                  variant="outlined" 
+                  size="small" 
+                />
+              </Stack>
             </CardContent>
           </Card>
         </Grid>

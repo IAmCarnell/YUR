@@ -43,18 +43,19 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   }
 
   const menuItems = [
-    { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
-    { text: 'Simulations', icon: <ScienceIcon />, path: '/simulations' },
-    { text: 'Visualizations', icon: <VisibilityIcon />, path: '/visualizations' },
-    { text: 'Documentation', icon: <DocumentationIcon />, path: '/documentation' },
-    { text: 'Tools', icon: <BuildIcon />, path: '/tools' },
+    { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
+    { text: 'Newsfeed', icon: <ScienceIcon />, path: '/newsfeed' },
+    { text: 'Friends', icon: <VisibilityIcon />, path: '/friends' },
+    { text: 'PitTube', icon: <DocumentationIcon />, path: '/pittube' },
+    { text: 'PitJob', icon: <BuildIcon />, path: '/pitjob' },
+    { text: 'Marketplace', icon: <BuildIcon />, path: '/marketplace' },
   ]
 
   const drawer = (
     <div>
       <Toolbar>
         <Typography variant="h6" noWrap component="div" sx={{ color: 'primary.main' }}>
-          YUR Framework
+          Pitnik
         </Typography>
       </Toolbar>
       <List>
@@ -99,7 +100,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div">
-            Infinite-Dimensional Thing Framework
+            Pitnik - Social Media Platform
           </Typography>
         </Toolbar>
       </AppBar>
