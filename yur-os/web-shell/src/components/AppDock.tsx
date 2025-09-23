@@ -11,8 +11,8 @@ export const AppDock: React.FC<AppDockProps> = ({ onAppSelect, selectedApp }) =>
     { id: 'connect', label: 'Connect', icon: '🌐', color: '#2196f3' },
     { id: 'pay', label: 'Pay', icon: '💎', color: '#ff9800' },
     { id: 'mind', label: 'Mind', icon: '🧠', color: '#9c27b0' },
-    { id: 'maps', label: 'Maps', icon: '🗺️', color: '#795548' },
-    { id: 'rewards', label: 'Rewards', icon: '⭐', color: '#ffc107' },
+    { id: 'marketplace', label: 'Market', icon: '🏪', color: '#e91e63' },
+    { id: 'rewards', label: 'Quests', icon: '⭐', color: '#ffc107' },
   ]
 
   return (
