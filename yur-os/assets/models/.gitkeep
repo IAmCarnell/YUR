@@ -1,0 +1,14 @@
+# 3D Models for YUR OS
+
+Optimized 3D assets for spatial computing interface.
+
+## Current Models
+- Coming soon: mandala.glb
+- Coming soon: fractal-patterns.fbx
+- Coming soon: app-icons.glb
+
+## Guidelines
+- Max 1MB per model for web optimization
+- GLTF/GLB format preferred for Three.js
+- Sacred geometry inspired designs
+- Infinite-dimensional mathematical patterns

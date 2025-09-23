@@ -1,0 +1,58 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #0a0a0a;
+  color: #ffffff;
+  overflow: hidden;
+}
+
+#root {
+  width: 100vw;
+  height: 100vh;
+}
+
+.spatial-editor {
+  display: grid;
+  grid-template-columns: 300px 1fr 300px;
+  height: 100vh;
+  gap: 1px;
+  background: #00bcd4;
+}
+
+.file-explorer {
+  background: rgba(26, 26, 46, 0.95);
+  overflow-y: auto;
+  border-right: 1px solid rgba(0, 188, 212, 0.3);
+}
+
+.editor-panel {
+  background: rgba(10, 10, 10, 0.95);
+  display: flex;
+  flex-direction: column;
+}
+
+.preview-panel {
+  background: rgba(26, 26, 46, 0.95);
+  overflow-y: auto;
+  border-left: 1px solid rgba(0, 188, 212, 0.3);
+}
+
+.toolbar {
+  background: rgba(0, 188, 212, 0.1);
+  padding: 12px;
+  border-bottom: 1px solid rgba(0, 188, 212, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.toolbar h3 {
+  color: #00bcd4;
+  font-size: 14px;
+  font-weight: 600;
+}
