@@ -14,7 +14,12 @@
     "react-dom": "^18.2.0",
     "three": "^0.158.0",
     "@react-three/fiber": "^8.15.11",
-    "@react-three/drei": "^9.88.13"
+    "@react-three/drei": "^9.88.13",
+    "@react-three/xr": "^6.2.0",
+    "yjs": "^13.6.10",
+    "y-websocket": "^2.0.4",
+    "web3": "^4.3.0",
+    "ethers": "^6.8.1"
   },
   "devDependencies": {
     "@types/react": "^18.2.43",
