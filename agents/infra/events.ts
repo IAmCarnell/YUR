@@ -172,14 +172,13 @@ class EventLogWriter {
       return;
     }
 
-    return new Promise((resolve, reject) => {
-      this.writeStream!.flush?.((error?: Error) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve();
-        }
-      });
+    return new Promise((resolve) => {
+      // For Node.js streams, we can call end() to flush
+      if (this.writeStream && 'flush' in this.writeStream && typeof this.writeStream.flush === 'function') {
+        (this.writeStream as any).flush(() => resolve());
+      } else {
+        resolve();
+      }
     });
   }
 

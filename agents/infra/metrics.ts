@@ -319,18 +319,18 @@ export class MetricsCollector extends EventEmitter {
   private running: boolean = false;
 
   // Built-in framework metrics
-  private agentRegistrations: Counter;
-  private agentHeartbeats: Counter;
-  private eventPublications: Counter;
-  private policyEvaluations: Counter;
-  private secretAccesses: Counter;
-  private flowExecutions: Counter;
-  private httpRequests: Counter;
-  private httpRequestDuration: Histogram;
-  private activeConnections: Gauge;
-  private memoryUsage: Gauge;
-  private cpuUsage: Gauge;
-  private errorCount: Counter;
+  private agentRegistrations!: Counter;
+  private agentHeartbeats!: Counter;
+  private eventPublications!: Counter;
+  private policyEvaluations!: Counter;
+  private secretAccesses!: Counter;
+  private flowExecutions!: Counter;
+  private httpRequests!: Counter;
+  private httpRequestDuration!: Histogram;
+  private activeConnections!: Gauge;
+  private memoryUsage!: Gauge;
+  private cpuUsage!: Gauge;
+  private errorCount!: Counter;
 
   constructor(config: Partial<MetricsConfig> = {}) {
     super();
