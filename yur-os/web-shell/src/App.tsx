@@ -61,7 +61,11 @@ function App() {
               onAppSelect={handleAppSelect}
             />
           ) : (
-            <MandalaScene zoomLevel={zoomLevel} selectedApp={selectedApp} />
+            <MandalaScene 
+              zoomLevel={zoomLevel} 
+              selectedApp={selectedApp} 
+              onAppClick={handleAppSelect}
+            />
           )}
         </XRSession>
       </Canvas>
