@@ -22,6 +22,7 @@ import {
   Visibility as VisibilityIcon,
   Description as DocumentationIcon,
   Build as BuildIcon,
+  Settings as SettingsIcon,
 } from '@mui/icons-material'
 import { useNavigate, useLocation } from 'react-router-dom'
 
@@ -48,6 +49,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
     { text: 'Visualizations', icon: <VisibilityIcon />, path: '/visualizations' },
     { text: 'Documentation', icon: <DocumentationIcon />, path: '/documentation' },
     { text: 'Tools', icon: <BuildIcon />, path: '/tools' },
+    { text: 'Settings', icon: <SettingsIcon />, path: '/settings' },
   ]
 
   const drawer = (

@@ -6,6 +6,8 @@ import { Simulations } from './pages/Simulations'
 import { Visualizations } from './pages/Visualizations'
 import { Documentation } from './pages/Documentation'
 import { Tools } from './pages/Tools'
+import { Settings } from './pages/Settings'
+import { SettingsProvider } from './settings'
 import './App.css'
 
 const theme = createTheme({
@@ -37,20 +39,23 @@ const theme = createTheme({
 
 function App() {
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Router>
-        <Layout>
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/simulations" element={<Simulations />} />
-            <Route path="/visualizations" element={<Visualizations />} />
-            <Route path="/documentation" element={<Documentation />} />
-            <Route path="/tools" element={<Tools />} />
-          </Routes>
-        </Layout>
-      </Router>
-    </ThemeProvider>
+    <SettingsProvider>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Router>
+          <Layout>
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/simulations" element={<Simulations />} />
+              <Route path="/visualizations" element={<Visualizations />} />
+              <Route path="/documentation" element={<Documentation />} />
+              <Route path="/tools" element={<Tools />} />
+              <Route path="/settings" element={<Settings />} />
+            </Routes>
+          </Layout>
+        </Router>
+      </ThemeProvider>
+    </SettingsProvider>
   )
 }
 
