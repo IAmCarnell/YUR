@@ -9,11 +9,29 @@ export const api = axios.create({
   },
 })
 
+// Define safe parameter types instead of using 'any'
+export interface SimulationParameters {
+  temperature?: number
+  iterations?: number
+  seed?: number
+  algorithm?: string
+  [key: string]: string | number | boolean | undefined
+}
+
 export interface SimulationConfig {
   mode: 'desktop' | 'supercomputing'
   n_dimensions: number
   simulation_type: 'DESI' | 'Bell' | 'AI' | 'Tree'
-  parameters: Record<string, any>
+  parameters: SimulationParameters
+}
+
+// Define safe metadata types instead of using 'any'
+export interface SimulationMetadata {
+  computation_time?: number
+  convergence?: boolean
+  error_rate?: number
+  algorithm_version?: string
+  [key: string]: string | number | boolean | undefined
 }
 
 export interface SimulationResult {
@@ -24,7 +42,7 @@ export interface SimulationResult {
     target: number
     strength: number
   }>
-  metadata: Record<string, any>
+  metadata: SimulationMetadata
 }
 
 export interface OperatorVisualization {
@@ -35,14 +53,14 @@ export interface OperatorVisualization {
 
 export const apiService = {
   // Health check
-  async health() {
-    const response = await api.get('/api/health')
+  async health(): Promise<{ status: string; timestamp: string }> {
+    const response = await api.get<{ status: string; timestamp: string }>('/api/health')
     return response.data
   },
 
   // Run simulation
   async runSimulation(config: SimulationConfig): Promise<SimulationResult> {
-    const response = await api.post('/api/simulate', config)
+    const response = await api.post<SimulationResult>('/api/simulate', config)
     return response.data
   },
 
@@ -51,7 +69,7 @@ export const apiService = {
     operatorType: string = 'harmonic',
     nDims: number = 100
   ): Promise<OperatorVisualization> {
-    const response = await api.get('/api/operator/visualization', {
+    const response = await api.get<OperatorVisualization>('/api/operator/visualization', {
       params: {
         operator_type: operatorType,
         n_dims: nDims,

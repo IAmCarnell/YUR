@@ -1,8 +1,10 @@
 /**
- * YUR Plugin Loader - Dynamic plugin system for extensible applications
+ * YUR Plugin Loader - Secure dynamic plugin system for extensible applications
+ * Implements security hardening, sandboxing, and validation
  */
 
 import React from 'react'
+import { validatePluginManifest, secureDynamicImport, generateSecurityReport, type SecurityAuditResult } from '../utils/pluginSecurity'
 
 export interface PluginManifest {
   id: string
@@ -19,10 +21,11 @@ export interface PluginManifest {
 
 export interface Plugin {
   manifest: PluginManifest
-  component: React.ComponentType<any>
-  api?: Record<string, any>
+  component: React.ComponentType<unknown>
+  api?: Record<string, unknown>
   initialize?: () => Promise<void>
   destroy?: () => Promise<void>
+  securityAudit?: SecurityAuditResult
 }
 
 export interface PluginRegistry {
@@ -32,21 +35,44 @@ export interface PluginRegistry {
 export class YURPluginLoader {
   private plugins: PluginRegistry = {}
   private loadedPlugins = new Set<string>()
+  private securityAudits = new Map<string, SecurityAuditResult>()
 
-  // Load plugin from URL
+  // Load plugin from URL with security validation
   async loadPlugin(manifest: PluginManifest, baseUrl?: string): Promise<Plugin> {
     try {
+      // Security audit of manifest
+      const securityAudit = validatePluginManifest(manifest)
+      this.securityAudits.set(manifest.id, securityAudit)
+      
+      if (!securityAudit.passed) {
+        const criticalViolations = securityAudit.violations.filter(v => v.severity === 'critical')
+        if (criticalViolations.length > 0) {
+          throw new Error(`Plugin security audit failed: ${criticalViolations.map(v => v.message).join(', ')}`)
+        }
+      }
+      
       const fullUrl = baseUrl ? `${baseUrl}/${manifest.entryPoint}` : manifest.entryPoint
       
-      // Dynamic import of the plugin module
-      const module = await import(/* @vite-ignore */ fullUrl)
+      // Secure dynamic import with sandboxing
+      const module = await secureDynamicImport(
+        fullUrl, 
+        manifest.id, 
+        manifest.permissions || []
+      )
       
       const plugin: Plugin = {
         manifest,
-        component: module.default || module.component,
-        api: module.api,
-        initialize: module.initialize,
-        destroy: module.destroy
+        component: (module as { default?: React.ComponentType<unknown>; component?: React.ComponentType<unknown> }).default || 
+                  (module as { component?: React.ComponentType<unknown> }).component as React.ComponentType<unknown>,
+        api: (module as { api?: Record<string, unknown> }).api,
+        initialize: (module as { initialize?: () => Promise<void> }).initialize,
+        destroy: (module as { destroy?: () => Promise<void> }).destroy,
+        securityAudit
+      }
+
+      // Validate required component
+      if (!plugin.component) {
+        throw new Error(`Plugin ${manifest.id} must export a default component or named component export`)
       }
 
       // Initialize plugin if it has an init function
@@ -57,14 +83,25 @@ export class YURPluginLoader {
       this.plugins[manifest.id] = plugin
       this.loadedPlugins.add(manifest.id)
       
+      console.log(`Plugin ${manifest.id} loaded with security audit:`, securityAudit)
       return plugin
     } catch (error) {
-      throw new Error(`Failed to load plugin ${manifest.id}: ${error}`)
+      this.securityAudits.delete(manifest.id)
+      throw new Error(`Failed to load plugin ${manifest.id}: ${error instanceof Error ? error.message : String(error)}`)
     }
   }
 
-  // Load plugin from inline definition (for demo)
+  // Load plugin from inline definition (for demo) with security validation
   loadInlinePlugin(plugin: Plugin): void {
+    // Validate manifest even for inline plugins
+    const securityAudit = validatePluginManifest(plugin.manifest)
+    plugin.securityAudit = securityAudit
+    this.securityAudits.set(plugin.manifest.id, securityAudit)
+    
+    if (!securityAudit.passed) {
+      console.warn(`Inline plugin ${plugin.manifest.id} has security violations:`, securityAudit.violations)
+    }
+    
     this.plugins[plugin.manifest.id] = plugin
     this.loadedPlugins.add(plugin.manifest.id)
   }
@@ -84,18 +121,37 @@ export class YURPluginLoader {
     return this.loadedPlugins.has(pluginId)
   }
 
-  // Unload plugin
+  // Get security audit for plugin
+  getSecurityAudit(pluginId: string): SecurityAuditResult | null {
+    return this.securityAudits.get(pluginId) || null
+  }
+
+  // Get plugins by security risk level
+  getPluginsByRiskLevel(riskLevel: 'low' | 'medium' | 'high' | 'critical'): Plugin[] {
+    return Object.values(this.plugins).filter(plugin => 
+      plugin.securityAudit?.riskLevel === riskLevel
+    )
+  }
+
+  // Unload plugin with cleanup
   async unloadPlugin(pluginId: string): Promise<void> {
     const plugin = this.plugins[pluginId]
     if (!plugin) return
 
     // Call destroy if available
     if (plugin.destroy) {
-      await plugin.destroy()
+      try {
+        await plugin.destroy()
+      } catch (error) {
+        console.error(`Error during plugin ${pluginId} cleanup:`, error)
+      }
     }
 
     delete this.plugins[pluginId]
     this.loadedPlugins.delete(pluginId)
+    this.securityAudits.delete(pluginId)
+    
+    console.log(`Plugin ${pluginId} unloaded and cleaned up`)
   }
 
   // Get plugins by category
