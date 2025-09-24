@@ -1,0 +1,43 @@
+[
+  {
+    "id": "security_alert_1758695329304",
+    "type": "security:secrets_detected",
+    "source": "compliance-agent",
+    "topic": "security.alerts",
+    "data": {
+      "source": "test-file.js",
+      "severity": "critical",
+      "secretsFound": 1,
+      "criticalSecrets": 0,
+      "recommendation": "Immediate secret rotation required"
+    },
+    "timestamp": "2025-09-24T06:28:49.304Z",
+    "signature": "XvPGdktep7g9o0BB7JGub4mR9JyNlcHDu49RpDPb30wsOsxJTzltmDDuDyot5utH57KmbgDBiYWxCfhG8KEnFhChfpO0ZgNRos07C0WUWq/DKIL5DxhRiOSJEjvqMhZQaL59jWSGOHGDMH7k3f9soOYvTh7VpPmsbslLC31vmw+ivFTd7HbMMnd8L1P4iEF0U9HF0uHN2PlwDjd/jfoGWB9iwBRtR6j+JCHEdYiTyjxyxZNtAmv1jhr1/FzR41bJtervwhQacy2Kd/cBjd+B/dMVuuImyMYZITRbFmI6xRTgI1rqm/MhbpWVxsa385r6ta/kcZYKmJ/YcadfQ5mSUA=="
+  },
+  {
+    "id": "test-event-1",
+    "type": "data:processed",
+    "source": "data-processor",
+    "topic": "data.processing",
+    "data": {
+      "recordCount": 100,
+      "status": "completed"
+    },
+    "timestamp": "2025-09-24T06:28:49.308Z",
+    "signature": "BoR6/ioKvI625rYnxsPDKAlpHBZ+fmiwgqnnZiTXlrqBt/leCv4qVJYt0kw6AXOOHEuWB6HmuiZMOfDs3imbWgyVQiMSD+o99jmSOECPIQp149Ot1huhgo4UaOlpn6wIQIdEIEQ9uwrA3cHVdHr2bClTb6j+TBT+cGL4VldK7uTbzYXhdoV79FEDvSzI0bS6tFo+pR1ovJ/1BXrYKgcxfcmHQSFrpSqjxD9cqcMq0xquPn8/3iLPVamb5gpSPKAB6X1PIkjfrFYaQeY7F7fgtZLsi1CYMf7GBawfVUAql4lOG3gwQU9JPO77E1SW3AS8HQpkbA1hDalaOUTf6jG3gw=="
+  },
+  {
+    "id": "orchestration_error_1758695329311",
+    "type": "orchestration:flow_error",
+    "source": "orchestrator-agent",
+    "topic": "orchestration.errors",
+    "data": {
+      "ruleId": "security-incident-response",
+      "flowId": "security-response-flow",
+      "error": "Agent security-agent not found",
+      "triggerEvent": "security:secrets_detected"
+    },
+    "timestamp": "2025-09-24T06:28:49.311Z",
+    "signature": "R+RvVj4SvD1lW5KjajHxugj05s6UIsUyJWSo0SWVw3P8nbrnVSfnEi6Ybz+PW7Jr8utsT32Qs/8HHyYeDqEk3PIBx0349FtJhpVStHdZ61IWHyZheOMXBO8V76O+MPTYj2Fz0gzlYBqsL0LwZ/OXg8tEWCh4AsI+QPxLj1cUM4Vya0bP4K6VUCQdOJpvjXWlupr3z6c0Mhm2G/6oWjqwL6wgmwjM044uK6EEhGGiUnRECcEnecSb7shOf65cRk/I3OcSc2ZqDDPkZkjPnRS1GkPX2iIH3NK8j76IhBZc8d+4LKvjF/c0m360OKtuV/DN4CMDvwn6o9WWOuf7DoCokg=="
+  }
+]
