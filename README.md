@@ -25,6 +25,18 @@ A revolutionary spatial operating system featuring:
 - **Multi-Reality Support** - Desktop, browser PWA, mobile, and XR/AR environments
 - **Advanced Modules** - Real-time collaboration, marketplace, gamification, DeFi integration
 
+### 🤖 YUR Agent Framework - Production Agent Orchestration
+A comprehensive production-ready agent system with:
+- **Agent Health API** - Universal monitoring with `{ healthy: boolean, reason?: string }`
+- **Self-Registration** - Central registry with in-memory + persistent storage
+- **Permissions/Sandboxing** - Task, secret, and event topic access controls
+- **Conditional Flow Control** - if/else, loops, retries, and branching logic
+- **Output Piping** - Reference previous steps with `{{steps.myStep.result}}`
+- **Event-Driven Orchestration** - Auto-trigger flows on events (e.g., `build.failed`)
+- **Per-Secret Access Controls** - Encrypted secrets with comprehensive audit logs
+- **Secrets Scanning** - Automated detection and rotation of leaked credentials
+- **Cryptographic Authentication** - RSA-signed actions for tamper-proof attribution
+
 ## 🚀 Quick Start
 
 ### Full Development Environment
@@ -49,6 +61,12 @@ cd backend && pip install -r requirements.txt && python main.py  # Backend: http
 ```bash
 cd yur-os/web-shell && npm install && npm run dev  # YUR OS: http://localhost:3000
 cd yur-os/apps/docs && npm install && npm run dev  # Docs App: http://localhost:3001
+```
+
+### YUR Agent Framework Only
+```bash
+cd agents && npm install && npm run build          # Build the agent framework
+node dist/examples/basic-usage.js                  # Run comprehensive example
 ```
 
 ## 📊 Repository Activity Summary
@@ -161,6 +179,18 @@ YUR/
 │   ├── backend/           # Python FastAPI server
 │   └── scripts/           # Setup and deployment scripts
 │
+├── 🤖 YUR Agent Framework (Production Orchestration)
+│   ├── types.ts           # Core interfaces and type definitions
+│   ├── base-agent.ts      # Abstract base class for all agents
+│   ├── agent-registry.ts  # Self-registration and discovery system
+│   ├── flow-runner.ts     # Conditional execution and output piping
+│   ├── event-bus.ts       # Topic-based event routing and history
+│   ├── secrets-agent.ts   # Encrypted secrets with access controls
+│   ├── compliance-agent.ts # Secret scanning and auto-recovery
+│   ├── orchestrator-agent.ts # Event-driven workflow automation
+│   ├── framework.ts       # Main orchestration framework
+│   └── examples/          # Working demonstrations and tutorials
+│
 ├── 🌌 YUR OS (Spatial Computing)
 │   ├── web-shell/         # Main spatial interface (React + Three.js)
 │   ├── apps/              # Modular spatial applications
@@ -184,12 +214,14 @@ YUR/
 - [ ] **Testing Infrastructure** - Add comprehensive test suites
 - [ ] **Performance Optimization** - Bundle splitting and caching strategies
 - [ ] **Accessibility Audit** - WCAG 2.1 AA compliance verification
+- [x] **Production Agent Framework** - Complete orchestration system with security
 
 ### Near Term (Next 2-3 Sprints)
 - [ ] **YUR OS Mobile** - Touch-optimized mandala interface
 - [ ] **Advanced XR Features** - Complete WebXR implementation with hand tracking
 - [ ] **Plugin Marketplace** - Secure plugin loading and community contributions
 - [ ] **Advanced Analytics** - Usage metrics and performance monitoring
+- [ ] **Agent Framework Integration** - Connect agents with YUR OS and Framework components
 
 ### Long Term Vision
 - [ ] **Multi-User Collaboration** - Shared spatial workspaces
