@@ -1,0 +1,46 @@
+{
+  "name": "@yur/agent-framework",
+  "version": "1.0.0",
+  "description": "Production-ready agent framework with health monitoring, self-registration, permissions, flow control, and security",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "node --test",
+    "lint": "eslint . --ext .ts",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "agents",
+    "orchestration",
+    "workflow",
+    "automation",
+    "security",
+    "monitoring",
+    "compliance"
+  ],
+  "author": "YUR Framework Team",
+  "license": "BSD-3-Clause",
+  "dependencies": {
+    "@types/node": "^20.0.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "typescript": "^5.0.0"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist/**/*",
+    "README.md",
+    "LICENSE"
+  ]
+}
