@@ -10,21 +10,49 @@ import {
   Chip,
   LinearProgress,
   Alert,
+  Tabs,
+  Tab,
 } from '@mui/material'
 import {
   Timeline,
   Science,
   Visibility,
   Speed,
+  SmartToy,
+  Sensors,
+  MonitorHeart,
 } from '@mui/icons-material'
 import { useNavigate } from 'react-router-dom'
 import { apiService } from '../api/client'
+import { SystemMonitor, AgentCards, TaskDashboard } from '../components/DigitalTwin'
+
+interface TabPanelProps {
+  children?: React.ReactNode
+  index: number
+  value: number
+}
+
+function TabPanel(props: TabPanelProps) {
+  const { children, value, index, ...other } = props
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`dashboard-tabpanel-${index}`}
+      aria-labelledby={`dashboard-tab-${index}`}
+      {...other}
+    >
+      {value === index && <Box>{children}</Box>}
+    </div>
+  )
+}
 
 export const Dashboard: React.FC = () => {
   const navigate = useNavigate()
   const [isHealthy, setIsHealthy] = useState<boolean>(false)
   const [healthData, setHealthData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+  const [tabValue, setTabValue] = useState(0)
 
   useEffect(() => {
     checkHealth()
@@ -42,6 +70,10 @@ export const Dashboard: React.FC = () => {
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setTabValue(newValue)
   }
 
   const features = [
@@ -67,6 +99,13 @@ export const Dashboard: React.FC = () => {
       color: '#4caf50',
     },
     {
+      title: 'Digital Twin System',
+      description: 'Real-time system monitoring, agents, and command interface',
+      icon: <MonitorHeart sx={{ fontSize: 40 }} />,
+      action: () => setTabValue(1),
+      color: '#9c27b0',
+    },
+    {
       title: 'Documentation Hub',
       description: 'Access theoretical foundations and mathematical formalism',
       icon: <Timeline sx={{ fontSize: 40 }} />,
@@ -77,6 +116,23 @@ export const Dashboard: React.FC = () => {
 
   return (
     <Box>
+      <Typography variant="h2" gutterBottom>
+        YUR Framework Dashboard
+      </Typography>
+      <Typography variant="h6" color="text.secondary" gutterBottom>
+        Infinite-Dimensional Thing Framework - Interactive Exploration Platform
+      </Typography>
+
+      {/* Tabs */}
+      <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+        <Tabs value={tabValue} onChange={handleTabChange} aria-label="dashboard tabs">
+          <Tab label="Overview" />
+          <Tab label="Digital Twin" />
+        </Tabs>
+      </Box>
+
+      {/* Overview Tab */}
+      <TabPanel value={tabValue} index={0}>
       <Typography variant="h2" gutterBottom>
         YUR Framework Dashboard
       </Typography>
@@ -200,6 +256,51 @@ export const Dashboard: React.FC = () => {
           </Card>
         </Grid>
       </Grid>
+      </TabPanel>
+
+      {/* Digital Twin Tab */}
+      <TabPanel value={tabValue} index={1}>
+        <DigitalTwinTabs />
+      </TabPanel>
+    </Box>
+  )
+}
+
+const DigitalTwinTabs: React.FC = () => {
+  const [dtTabValue, setDtTabValue] = useState(0)
+
+  const handleDtTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setDtTabValue(newValue)
+  }
+
+  return (
+    <Box>
+      <Typography variant="h4" gutterBottom>
+        Digital Twin System
+      </Typography>
+      <Typography variant="h6" color="text.secondary" gutterBottom sx={{ mb: 4 }}>
+        Real-time system monitoring, intelligent agents, and task management
+      </Typography>
+      
+      <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+        <Tabs value={dtTabValue} onChange={handleDtTabChange} aria-label="digital-twin-tabs">
+          <Tab label="System Monitor" icon={<Sensors />} />
+          <Tab label="Agent Management" icon={<SmartToy />} />
+          <Tab label="Task Dashboard" icon={<Timeline />} />
+        </Tabs>
+      </Box>
+      
+      <TabPanel value={dtTabValue} index={0}>
+        <SystemMonitor />
+      </TabPanel>
+      
+      <TabPanel value={dtTabValue} index={1}>
+        <AgentCards />
+      </TabPanel>
+      
+      <TabPanel value={dtTabValue} index={2}>
+        <TaskDashboard />
+      </TabPanel>
     </Box>
   )
 }
