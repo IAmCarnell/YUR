@@ -11,6 +11,7 @@ from typing import List, Dict, Any, Optional
 import json
 import io
 import base64
+from digital_twin import digital_twin, SystemMetrics, ProcessInfo, HardwareInfo, Agent
 
 app = FastAPI(
     title="YUR Framework API",
@@ -291,6 +292,85 @@ async def get_operator_visualization(operator_type: str = "harmonic", n_dims: in
         "eigenvalues": eigenvals.tolist()[:20],  # First 20 for display
         "matrix_shape": matrix.shape
     }
+
+# Digital Twin API Endpoints
+
+@app.get("/api/digital-twin/system/status")
+async def get_system_status():
+    """Get overall system health and status"""
+    return await digital_twin.get_system_status()
+
+@app.get("/api/digital-twin/system/metrics", response_model=SystemMetrics)
+async def get_system_metrics():
+    """Get real-time system metrics"""
+    return await digital_twin.get_system_metrics()
+
+@app.get("/api/digital-twin/system/processes")
+async def get_system_processes(limit: int = 50):
+    """Get running processes information"""
+    processes = await digital_twin.get_processes(limit)
+    return {"processes": processes, "count": len(processes)}
+
+@app.get("/api/digital-twin/system/hardware", response_model=HardwareInfo)
+async def get_hardware_info():
+    """Get hardware information"""
+    return await digital_twin.get_hardware_info()
+
+@app.post("/api/digital-twin/commands/execute")
+async def execute_command(request: dict):
+    """Execute system command with security controls"""
+    command = request.get("command")
+    args = request.get("args", [])
+    timeout = request.get("timeout", 30)
+    
+    if not command:
+        raise HTTPException(status_code=400, detail="Command is required")
+    
+    return await digital_twin.execute_command(command, args, timeout)
+
+@app.get("/api/digital-twin/commands/history")
+async def get_command_history(limit: int = 50):
+    """Get command execution history"""
+    return {"history": digital_twin.get_command_history(limit)}
+
+@app.get("/api/digital-twin/agents")
+async def get_agents():
+    """Get all digital twin agents"""
+    agents = await digital_twin.get_agents()
+    return {"agents": agents, "count": len(agents)}
+
+@app.post("/api/digital-twin/agents/create")
+async def create_agent(request: dict):
+    """Create a new digital twin agent"""
+    name = request.get("name")
+    agent_type = request.get("agent_type")
+    capabilities = request.get("capabilities", [])
+    
+    if not name or not agent_type:
+        raise HTTPException(status_code=400, detail="Name and agent_type are required")
+    
+    agent = await digital_twin.create_agent(name, agent_type, capabilities)
+    return {"agent": agent, "message": f"Agent '{name}' created successfully"}
+
+@app.get("/api/digital-twin/agents/{agent_id}/status")
+async def get_agent_status(agent_id: str):
+    """Get specific agent status"""
+    agent = await digital_twin.get_agent(agent_id)
+    if not agent:
+        raise HTTPException(status_code=404, detail=f"Agent {agent_id} not found")
+    return {"agent": agent}
+
+@app.post("/api/digital-twin/agents/{agent_id}/task")
+async def assign_agent_task(agent_id: str, request: dict):
+    """Assign task to an agent"""
+    task = request.get("task")
+    parameters = request.get("parameters", {})
+    
+    if not task:
+        raise HTTPException(status_code=400, detail="Task is required")
+    
+    result = await digital_twin.assign_agent_task(agent_id, task, parameters)
+    return {"result": result, "message": f"Task '{task}' assigned to agent {agent_id}"}
 
 if __name__ == "__main__":
     import uvicorn
