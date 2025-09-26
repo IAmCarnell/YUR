@@ -6,15 +6,16 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
-const WorkboxPlugin = require('workbox-webpack-plugin');
 const CompressionPlugin = require('compression-webpack-plugin');
+const WorkboxPlugin = require('workbox-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 
 module.exports = (env, argv) => {
   const isProduction = argv.mode === 'production';
+  const isDevelopment = !isProduction;
   const isAnalyze = process.env.ANALYZE === 'true';
-  
+
   return {
     entry: {
       main: './src/index.tsx',
@@ -35,9 +36,7 @@ module.exports = (env, argv) => {
       assetModuleFilename: 'assets/[name].[contenthash:8][ext]',
       clean: true,
       publicPath: '/',
-      // Enable module federation for micro-frontend architecture
       uniqueName: 'yur-framework',
-      // Optimize for HTTP/2 multiplexing
       chunkLoadTimeout: 30000,
     },
     
@@ -142,7 +141,6 @@ module.exports = (env, argv) => {
             priority: 15,
             minChunks: 1,
           },
-          // Common application code
           common: {
             test: /[\\/]src[\\/](components|utils|hooks)[\\/]/,
             name: 'common-app',
@@ -165,9 +163,7 @@ module.exports = (env, argv) => {
       },
       usedExports: true,
       sideEffects: false,
-      // Enable module concatenation
       concatenateModules: true,
-      // Tree shaking optimizations
       providedExports: true,
     },
     
@@ -183,9 +179,14 @@ module.exports = (env, argv) => {
         '@hooks': path.resolve(__dirname, '../../frontend/src/hooks'),
         '@types': path.resolve(__dirname, '../../frontend/src/types'),
       },
-      // Resolve optimization
       symlinks: false,
       cacheWithContext: false,
+      fallback: {
+        "crypto": require.resolve("crypto-browserify"),
+        "stream": require.resolve("stream-browserify"),
+        "buffer": require.resolve("buffer"),
+        "process": require.resolve("process/browser"),
+      }
     },
     
     module: {
@@ -217,7 +218,6 @@ module.exports = (env, argv) => {
                     regenerator: true,
                     useESModules: true,
                   }],
-                  // Tree shaking for imports
                   ['babel-plugin-import', {
                     libraryName: '@mui/material',
                     libraryDirectory: '',
@@ -287,7 +287,6 @@ module.exports = (env, argv) => {
             filename: 'assets/3d/[name].[contenthash:8][ext]',
           },
         },
-        // Web Workers
         {
           test: /\.worker\.(js|ts)$/,
           use: {
@@ -316,12 +315,10 @@ module.exports = (env, argv) => {
           minifyCSS: true,
           minifyURLs: true,
         } : false,
-        // Preload critical chunks
         chunks: ['runtime-main', 'react-vendor', 'ui-vendor', 'main'],
         chunksSortMode: 'manual',
       }),
       
-      // Service Worker for caching
       ...(isProduction ? [
         new WorkboxPlugin.GenerateSW({
           clientsClaim: true,
@@ -364,10 +361,6 @@ module.exports = (env, argv) => {
             },
           ],
         }),
-      ] : []),
-      
-      // Compression
-      ...(isProduction ? [
         new CompressionPlugin({
           algorithm: 'gzip',
           test: /\.(js|css|html|svg)$/,
@@ -376,7 +369,6 @@ module.exports = (env, argv) => {
         }),
       ] : []),
       
-      // Bundle analyzer
       ...(isAnalyze ? [
         new BundleAnalyzerPlugin({
           analyzerMode: 'server',
@@ -400,9 +392,7 @@ module.exports = (env, argv) => {
           warnings: false,
         },
       },
-      // HTTP/2 support
       http2: true,
-      // Enable caching headers
       headers: {
         'Cache-Control': 'no-cache',
       },
@@ -424,15 +414,12 @@ module.exports = (env, argv) => {
       maxEntrypointSize: 512000,
       hints: isProduction ? 'warning' : false,
       assetFilter: (assetFilename) => {
-        // Ignore source maps and compressed files for performance budgets
         return !assetFilename.endsWith('.map') && !assetFilename.endsWith('.gz');
       },
     },
     
-    // Enable source maps for debugging
     devtool: isProduction ? 'source-map' : 'eval-source-map',
     
-    // Optimization for build speed
     stats: {
       children: false,
       chunks: false,
@@ -445,22 +432,9 @@ module.exports = (env, argv) => {
       cachedAssets: false,
     },
     
-    // Node.js polyfills
-    resolve: {
-      fallback: {
-        "crypto": require.resolve("crypto-browserify"),
-        "stream": require.resolve("stream-browserify"),
-        "buffer": require.resolve("buffer"),
-        "process": require.resolve("process/browser"),
-      },
-    },
-    
     experiments: {
-      // Enable WebAssembly support
       asyncWebAssembly: true,
-      // Enable top-level await
       topLevelAwait: true,
-      // Enable module federation
       outputModule: true,
     },
   };
