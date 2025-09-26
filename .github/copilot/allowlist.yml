@@ -1,0 +1,6 @@
+allowed_hosts:
+  - googlechromelabs.github.io
+  - storage.googleapis.com
+allowed_urls:
+  - "https://storage.googleapis.com/chrome-for-testing-public/"
+  - "https://googlechromelabs.github.io/"
