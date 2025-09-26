@@ -1,0 +1,37 @@
+{
+  "compilerOptions": {
+    "target": "ES2018",
+    "lib": ["ES2018", "DOM", "DOM.Iterable"],
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "allowJs": true,
+    "strict": false,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "declaration": true,
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@agent-framework/*": ["./agent-framework/*"],
+      "@yur-os/*": ["./yur-os/*"],
+      "@plugins/*": ["./plugins/*"]
+    },
+    "types": ["jest", "node"]
+  },
+  "include": [
+    "tests/**/*",
+    "agent-framework/**/*",
+    "yur-os/**/*",
+    "plugins/**/*",
+    "core/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/*.test.ts",
+    "**/*.spec.ts"
+  ]
+}

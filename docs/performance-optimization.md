@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document outlines performance optimization strategies for the YUR Framework, covering bundle splitting, caching, and build optimizations.
+This document outlines comprehensive performance optimization strategies for the YUR Framework, covering bundle splitting, caching, benchmarking, and advanced optimization techniques.
 
 ## Bundle Splitting Strategy
 

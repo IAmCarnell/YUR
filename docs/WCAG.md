@@ -2,7 +2,548 @@
 
 ## Overview
 
-This document outlines the accessibility requirements and guidelines for the YUR platform to ensure WCAG 2.1 AA compliance across all components.
+This document outlines the accessibility requirements and guidelines for the YUR platform to ensure WCAG 2.1 AA compliance across all components, with special focus on spatial computing interfaces, scientific visualizations, and agent framework interactions.
+
+## Core Accessibility Principles
+
+### 1. Perceivable
+Information and UI components must be presentable to users in ways they can perceive.
+
+#### Visual Design
+- **Color Contrast**: Minimum 4.5:1 for normal text, 3:1 for large text
+- **Color Independence**: Information must not rely solely on color
+- **Text Alternatives**: All non-text content has text alternatives
+- **Adaptable Content**: Content can be presented in different ways without losing meaning
+
+#### Implementation
+```css
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .mandala-node {
+    border: 3px solid var(--high-contrast-border);
+    background: var(--high-contrast-bg);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .spatial-animation {
+    animation: none;
+    transition: none;
+  }
+}
+```
+
+### 2. Operable
+UI components and navigation must be operable by all users.
+
+#### Keyboard Navigation
+- All interactive elements are keyboard accessible
+- Logical tab order throughout the interface
+- No keyboard traps
+- Custom keyboard shortcuts don't conflict with assistive technology
+
+#### Implementation
+```typescript
+// Keyboard navigation for mandala dock
+class MandalaDockNavigation {
+  private currentNode = 0;
+  private nodes: HTMLElement[] = [];
+
+  constructor(dockElement: HTMLElement) {
+    this.setupKeyboardNavigation(dockElement);
+  }
+
+  private setupKeyboardNavigation(dock: HTMLElement) {
+    dock.addEventListener('keydown', (event: KeyboardEvent) => {
+      switch (event.key) {
+        case 'ArrowRight':
+        case 'ArrowDown':
+          this.navigateToNext();
+          event.preventDefault();
+          break;
+        case 'ArrowLeft':
+        case 'ArrowUp':
+          this.navigateToPrevious();
+          event.preventDefault();
+          break;
+        case 'Enter':
+        case ' ':
+          this.activateCurrentNode();
+          event.preventDefault();
+          break;
+        case 'Escape':
+          this.exitNavigation();
+          break;
+      }
+    });
+  }
+
+  private navigateToNext() {
+    if (this.currentNode < this.nodes.length - 1) {
+      this.currentNode++;
+      this.focusCurrentNode();
+    }
+  }
+
+  private focusCurrentNode() {
+    this.nodes[this.currentNode].focus();
+    this.announceToScreenReader(`Node ${this.currentNode + 1} of ${this.nodes.length}`);
+  }
+
+  private announceToScreenReader(message: string) {
+    const announcement = document.createElement('div');
+    announcement.setAttribute('aria-live', 'polite');
+    announcement.setAttribute('aria-atomic', 'true');
+    announcement.className = 'sr-only';
+    announcement.textContent = message;
+    document.body.appendChild(announcement);
+    
+    setTimeout(() => {
+      document.body.removeChild(announcement);
+    }, 1000);
+  }
+}
+```
+
+### 3. Understandable
+Information and operation of UI must be understandable to users.
+
+#### Clear Content
+- Text is readable and understandable
+- Content appears and operates in predictable ways
+- Users are helped to avoid and correct mistakes
+
+#### Implementation
+```typescript
+// Form validation with accessible error messages
+class AccessibleFormValidation {
+  private form: HTMLFormElement;
+  
+  constructor(form: HTMLFormElement) {
+    this.form = form;
+    this.setupValidation();
+  }
+
+  private setupValidation() {
+    this.form.addEventListener('submit', (event) => {
+      const errors = this.validateForm();
+      if (errors.length > 0) {
+        event.preventDefault();
+        this.displayErrors(errors);
+        this.focusFirstError();
+      }
+    });
+  }
+
+  private displayErrors(errors: ValidationError[]) {
+    // Remove existing error messages
+    const existingErrors = this.form.querySelectorAll('[role="alert"]');
+    existingErrors.forEach(error => error.remove());
+
+    errors.forEach(error => {
+      const field = this.form.querySelector(error.fieldSelector) as HTMLElement;
+      const errorElement = document.createElement('div');
+      
+      errorElement.setAttribute('role', 'alert');
+      errorElement.setAttribute('aria-atomic', 'true');
+      errorElement.className = 'field-error';
+      errorElement.textContent = error.message;
+      
+      // Associate error with field
+      const errorId = `error-${field.id}`;
+      errorElement.id = errorId;
+      field.setAttribute('aria-describedby', errorId);
+      field.setAttribute('aria-invalid', 'true');
+      
+      field.parentNode?.insertBefore(errorElement, field.nextSibling);
+    });
+  }
+}
+```
+
+### 4. Robust
+Content must be robust enough to be interpreted by a wide variety of user agents.
+
+#### Technical Implementation
+- Valid, semantic HTML
+- Compatible with assistive technologies
+- Future-proof markup
+
+## Component-Specific Accessibility Guidelines
+
+### Mandala Dock (YUR OS)
+
+#### Spatial Navigation Accessibility
+```typescript
+// Accessible spatial navigation
+interface SpatialNode {
+  id: string;
+  position: { x: number; y: number; z: number };
+  label: string;
+  description: string;
+  category: string;
+}
+
+class AccessibleMandalaDock {
+  private nodes: SpatialNode[] = [];
+  private currentFocus = 0;
+
+  render() {
+    return (
+      <div 
+        role="application"
+        aria-label="Spatial Application Dock"
+        aria-describedby="mandala-instructions"
+        onKeyDown={this.handleKeyNavigation}
+      >
+        <div id="mandala-instructions" className="sr-only">
+          Use arrow keys to navigate between applications. 
+          Press Enter to launch an application.
+          Press Escape to exit navigation mode.
+        </div>
+        
+        {this.nodes.map((node, index) => (
+          <button
+            key={node.id}
+            role="menuitem"
+            tabIndex={index === this.currentFocus ? 0 : -1}
+            aria-selected={index === this.currentFocus}
+            aria-label={`${node.label} - ${node.description}`}
+            aria-describedby={`node-${node.id}-details`}
+            className="mandala-node"
+            style={{
+              transform: `translate3d(${node.position.x}px, ${node.position.y}px, ${node.position.z}px)`
+            }}
+          >
+            <span className="node-icon" aria-hidden="true">
+              {this.getNodeIcon(node.category)}
+            </span>
+            <span className="node-label">{node.label}</span>
+            <div id={`node-${node.id}-details`} className="sr-only">
+              {node.description}
+            </div>
+          </button>
+        ))}
+      </div>
+    );
+  }
+}
+```
+
+#### Touch Accessibility
+- Minimum touch target size: 44px × 44px
+- Touch targets don't overlap
+- Gesture alternatives provided
+- Haptic feedback for spatial interactions
+
+### Scientific Visualizations
+
+#### Alternative Data Representations
+```typescript
+// Accessible data visualization
+class AccessibleVisualization {
+  private data: DataPoint[];
+  private chartType: 'line' | 'bar' | 'scatter';
+
+  renderAccessibleChart() {
+    return (
+      <div className="visualization-container">
+        {/* Visual chart */}
+        <div 
+          role="img" 
+          aria-labelledby="chart-title"
+          aria-describedby="chart-description"
+        >
+          {this.renderVisualChart()}
+        </div>
+        
+        {/* Text alternatives */}
+        <div className="chart-alternatives">
+          <h3 id="chart-title">{this.getChartTitle()}</h3>
+          <p id="chart-description">{this.getChartDescription()}</p>
+          
+          {/* Data table alternative */}
+          <details>
+            <summary>View data table</summary>
+            <table>
+              <caption>Data table for {this.getChartTitle()}</caption>
+              <thead>
+                <tr>
+                  <th scope="col">X Value</th>
+                  <th scope="col">Y Value</th>
+                  <th scope="col">Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                {this.data.map((point, index) => (
+                  <tr key={index}>
+                    <td>{point.x}</td>
+                    <td>{point.y}</td>
+                    <td>{point.description}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </details>
+          
+          {/* Audio description */}
+          <details>
+            <summary>Audio description</summary>
+            <button onClick={() => this.playAudioDescription()}>
+              Play audio description of chart
+            </button>
+          </details>
+        </div>
+      </div>
+    );
+  }
+
+  private playAudioDescription() {
+    const description = this.generateAudioDescription();
+    this.speakText(description);
+  }
+
+  private generateAudioDescription(): string {
+    const trend = this.analyzeTrend();
+    const extremes = this.findExtremes();
+    
+    return `This ${this.chartType} chart shows ${this.data.length} data points. 
+            The overall trend is ${trend}. 
+            The highest value is ${extremes.max} and the lowest is ${extremes.min}.`;
+  }
+}
+```
+
+### XR/AR Components
+
+#### Non-XR Alternatives
+```typescript
+// Inclusive XR implementation
+class InclusiveXRExperience {
+  private hasXRSupport: boolean;
+  private hasXRDevice: boolean;
+
+  async initialize() {
+    this.hasXRSupport = 'xr' in navigator;
+    
+    if (this.hasXRSupport) {
+      try {
+        const session = await navigator.xr.requestSession('immersive-vr');
+        this.hasXRDevice = true;
+      } catch {
+        this.hasXRDevice = false;
+      }
+    }
+
+    this.renderExperience();
+  }
+
+  renderExperience() {
+    return (
+      <div className="xr-experience">
+        {/* XR mode toggle */}
+        <div className="experience-controls">
+          <button 
+            disabled={!this.hasXRSupport}
+            onClick={this.enterXR}
+            aria-describedby="xr-description"
+          >
+            {this.hasXRSupport ? 'Enter VR Mode' : 'VR Not Supported'}
+          </button>
+          
+          <div id="xr-description" className="sr-only">
+            {this.hasXRSupport 
+              ? 'Experience the 3D environment in virtual reality'
+              : 'VR is not supported on this device. The 2D interface provides the same functionality.'
+            }
+          </div>
+        </div>
+
+        {/* Always provide 2D fallback */}
+        <div className="experience-2d" aria-label="2D Interface">
+          {this.render2DInterface()}
+        </div>
+
+        {/* XR mode (when active) */}
+        {this.state.isXRActive && (
+          <div className="experience-xr" aria-hidden="true">
+            {this.renderXRInterface()}
+          </div>
+        )}
+
+        {/* Audio descriptions for XR content */}
+        <div className="xr-audio-descriptions">
+          <button onClick={this.toggleAudioDescriptions}>
+            {this.state.audioDescriptionsEnabled ? 'Disable' : 'Enable'} Audio Descriptions
+          </button>
+        </div>
+      </div>
+    );
+  }
+}
+```
+
+### Agent Framework UI
+
+#### Accessible Agent Status
+```typescript
+// Accessible agent monitoring
+class AccessibleAgentStatus {
+  private agents: Agent[];
+
+  renderAgentDashboard() {
+    return (
+      <div role="region" aria-labelledby="agent-dashboard-title">
+        <h2 id="agent-dashboard-title">Agent Status Dashboard</h2>
+        
+        {/* Live region for status updates */}
+        <div 
+          aria-live="polite"
+          aria-atomic="false"
+          id="agent-announcements"
+          className="sr-only"
+        >
+          {this.state.lastAnnouncement}
+        </div>
+
+        <table aria-describedby="agent-table-description">
+          <caption id="agent-table-description">
+            Current status of {this.agents.length} agents. 
+            Updates automatically every 30 seconds.
+          </caption>
+          
+          <thead>
+            <tr>
+              <th scope="col">Agent Name</th>
+              <th scope="col">Status</th>
+              <th scope="col">Current Task</th>
+              <th scope="col">Actions</th>
+            </tr>
+          </thead>
+          
+          <tbody>
+            {this.agents.map(agent => (
+              <tr key={agent.id}>
+                <th scope="row">{agent.name}</th>
+                <td>
+                  <span 
+                    className={`status-indicator status-${agent.status}`}
+                    aria-label={`Status: ${agent.status}`}
+                  >
+                    {agent.status}
+                  </span>
+                </td>
+                <td>{agent.currentTask || 'None'}</td>
+                <td>
+                  <button 
+                    onClick={() => this.pauseAgent(agent)}
+                    aria-describedby={`agent-${agent.id}-pause-description`}
+                  >
+                    Pause
+                  </button>
+                  <div id={`agent-${agent.id}-pause-description`} className="sr-only">
+                    Pause {agent.name} agent
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  }
+
+  private announceStatusChange(agent: Agent, newStatus: string) {
+    const announcement = `${agent.name} status changed to ${newStatus}`;
+    this.setState({ lastAnnouncement: announcement });
+  }
+}
+```
+
+## Testing and Validation
+
+### Automated Testing
+```typescript
+// Accessibility test suite
+describe('Accessibility Compliance', () => {
+  test('should have no axe violations', async () => {
+    const { container } = render(<YURApplication />);
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
+  });
+
+  test('should support keyboard navigation', async () => {
+    render(<MandalaDock />);
+    const dock = screen.getByRole('application');
+    
+    // Tab to first element
+    userEvent.tab();
+    expect(dock.querySelector('[tabindex="0"]')).toHaveFocus();
+    
+    // Arrow key navigation
+    userEvent.keyboard('{ArrowRight}');
+    expect(screen.getByRole('menuitem', { name: /second node/i })).toHaveFocus();
+  });
+
+  test('should provide text alternatives', () => {
+    render(<ScientificVisualization data={mockData} />);
+    
+    // Chart should have text alternative
+    expect(screen.getByRole('img')).toHaveAttribute('aria-describedby');
+    
+    // Data table should be available
+    expect(screen.getByRole('table')).toBeInTheDocument();
+  });
+});
+```
+
+### Manual Testing Checklist
+
+#### Screen Reader Testing
+- [ ] NVDA (Windows)
+- [ ] JAWS (Windows)  
+- [ ] VoiceOver (macOS/iOS)
+- [ ] TalkBack (Android)
+
+#### Keyboard Testing
+- [ ] Tab navigation works logically
+- [ ] All interactive elements reachable
+- [ ] No keyboard traps
+- [ ] Custom shortcuts documented
+
+#### Visual Testing
+- [ ] 4.5:1 contrast ratio met
+- [ ] Text scales to 200% without horizontal scrolling
+- [ ] Focus indicators visible
+- [ ] Content readable without color
+
+## Documentation Requirements
+
+All new features must include:
+- Accessibility impact assessment
+- Keyboard interaction documentation  
+- Screen reader compatibility notes
+- High contrast mode considerations
+- Mobile touch accessibility requirements
+
+## Regular Audits
+
+- **Monthly**: Automated accessibility testing in CI/CD
+- **Quarterly**: Manual testing with assistive technologies
+- **Annually**: Third-party accessibility audit
+- **Per Release**: WCAG compliance verification
+
+## Accessibility Team Contacts
+
+For questions or guidance on accessibility implementation:
+- **Lead Accessibility Engineer**: [Contact Information]
+- **UX Accessibility Specialist**: [Contact Information]
+- **QA Accessibility Tester**: [Contact Information]
+
+---
+
+For questions or guidance on accessibility implementation, refer to the [W3C WCAG 2.1 Guidelines](https://www.w3.org/WAI/WCAG21/quickref/) or consult with the accessibility team.
 
 ## Accessibility Checklist
 
