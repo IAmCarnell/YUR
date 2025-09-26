@@ -10,6 +10,7 @@
     "build": "npm run build:frontend && npm run build:backend",
     "build:frontend": "cd frontend && npm run build",
     "build:backend": "cd backend && pip install -r requirements.txt",
+    "build:analyze": "cd frontend && ANALYZE=true npm run build",
     "install:all": "npm install && cd frontend && npm install && cd ../backend && pip install -r requirements.txt",
     "setup": "node scripts/setup.js",
     "test": "npm run test:frontend && npm run test:backend",
@@ -18,6 +19,9 @@
     "lint": "npm run lint:frontend && npm run lint:backend",
     "lint:frontend": "cd frontend && npm run lint",
     "lint:backend": "cd backend && flake8 .",
+    "benchmark": "node build-tools/benchmark.js",
+    "benchmark:build": "node build-tools/benchmark.js --build-only",
+    "lighthouse": "npm run dev & sleep 10 && npx lighthouse http://localhost:5173 --output html --output-path ./benchmark-results/lighthouse.html && pkill -f 'npm run dev'",
     "docker:build": "docker-compose build",
     "docker:up": "docker-compose up",
     "docker:down": "docker-compose down"
