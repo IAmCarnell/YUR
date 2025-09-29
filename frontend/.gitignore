@@ -22,3 +22,20 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Electron build artifacts
+dist-electron
+dist-electron-packaged
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Playwright
+test-results/
+playwright-report/
+playwright/.cache/
+
+# Build artifacts
+build/
+benchmark-results/
