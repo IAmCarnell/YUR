@@ -57,6 +57,13 @@ cd frontend && npm install && npm run dev    # Frontend: http://localhost:5173
 cd backend && pip install -r requirements.txt && python main.py  # Backend: http://localhost:8000
 ```
 
+### Desktop App (Electron)
+```bash
+cd frontend && npm install
+npm run electron:dev                          # Development mode with hot reload
+npm run build:win                            # Build Windows .exe installer
+```
+
 ### YUR OS Only
 ```bash
 cd yur-os/web-shell && npm install && npm run dev  # YUR OS: http://localhost:3000
