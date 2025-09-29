@@ -6,6 +6,7 @@ import { resolve } from 'path'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  base: './', // Important for Electron - use relative paths
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src'),
